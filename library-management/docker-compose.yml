@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-nest
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: library_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nest-network
+
+  app:
+    build: .
+    container_name: nest-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: root
+      DB_DATABASE: library_db
+      JWT_SECRET: dev_secret
+      NODE_ENV: stage.dev
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev
+    networks:
+      - nest-network
+
+volumes:
+  postgres_data:
+
+networks:
+  nest-network:
+    driver: bridge

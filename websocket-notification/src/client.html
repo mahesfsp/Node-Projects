@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Notification Test</title>
+</head>
+<body>
+  <h2>WebSocket Notifications</h2>
+  <p>
+  <label>Username: <input id="username" /></label>
+  <button onclick="register()">Register</button>
+</p>
+  <div id="messages"></div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      const div = document.getElementById('messages');
+      div.innerHTML += `<p>✅ Connected to WebSocket server!</p>`;
+    });
+
+    socket.on('notification', (data) => {
+      const div = document.getElementById('messages');
+      div.innerHTML += `<p>🔔 Notification: ${data.message}</p>`;
+    });
+
+    socket.on('disconnect', () => {
+      const div = document.getElementById('messages');
+      div.innerHTML += `<p>❌ Disconnected from server</p>`;
+    });
+    function register() {
+  const username = document.getElementById('username').value;
+  socket.emit('register', { username });
+}
+  </script>
+</body>
+</html>
